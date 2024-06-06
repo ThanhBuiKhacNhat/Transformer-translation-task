@@ -1,6 +1,18 @@
 import torch
 
 def translate_sentence(model, tokenizer, sentence, max_length=128):
+    """
+    Translates a given sentence using the trained model.
+    
+    Args:
+        model (nn.Module): The trained model.
+        tokenizer (transformers.PreTrainedTokenizer): The tokenizer used for encoding and decoding sentences.
+        sentence (str): The input sentence to be translated.
+        max_length (int): The maximum sequence length for the tokenizer.
+
+    Returns:
+        str: The translated sentence.
+    """
     model.eval()
     tokens = tokenizer(sentence, return_tensors='pt', max_length=max_length, padding='max_length', truncation=True)
     input_ids = tokens['input_ids'].to(model.device)

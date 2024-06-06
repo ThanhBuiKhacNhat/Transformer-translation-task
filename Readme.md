@@ -1,3 +1,28 @@
+# English to Hungarian Translation using Transformer
+
+This project utilizes a Transformer model for English to Hungarian translation. The model is trained on the "opus_books" dataset from the Hugging Face's dataset hub.
+
+## Requirements
+
+- Python 3.6 or later
+- PyTorch 1.8.1 or later
+- Transformers 4.6.1 or later
+- pandas
+- numpy
+- scikit-learn
+
+## Installation
+
+Clone the repository and install the required packages:
+
+```bash
+git clone https://github.com/ThanhBuiKhacNhat/Transformer-translation-task.git
+cd Transformer-translation-task
+pip install -r requirements.txt
+```
+
+
+
 # Table of Contents
 - [Table of Contents](#table-of-contents)
 - [Transformer - Attention is all you need - Pytorch Implementation](#transformer---attention-is-all-you-need---pytorch-implementation)
@@ -8,12 +33,6 @@
   - [Encoder](#encoder)
     - [Encoder Layer](#encoder-layer)
     - [Encoder](#encoder-1)
-<<<<<<< HEAD
-=======
-  - [Decoder](#decoder)
-    - [Decoder Layer](#decoder-layer)
-    - [Decoder](#decoder-1)
->>>>>>> e82163c0d7275861b35a89611b0dea9e509c2821
   - [Transformer](#transformer)
 - [Training](#training)
   - [Download the dataset](#download-the-dataset)
@@ -24,24 +43,10 @@
 
 # Transformer - Attention is all you need - Pytorch Implementation
 
-<<<<<<< HEAD
 <p align="center">
 <img src="https://miro.medium.com/max/1400/1*BHzGVskWGS_3jEcYYi6miQ.png" width="700">
 </p>
 
-=======
-This is a PyTorch implementation of the Transformer model in the paper [Attention is All You Need](https://arxiv.org/abs/1706.03762) (Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin, arxiv, 2017).
-
-In this implementation, I will train the model on the machine translation task from English to Vietnamese, with the data used [here](https://drive.google.com/file/d/1Fuo_ALIFKlUvOPbK5rUA5OfAS2wKn_95/view) ([This is](https://github.com/pbcquoc/transformer) the original reference repository)
-
-> The official Tensorflow Implementation can be found in: [tensorflow/tensor2tensor](https://github.com/tensorflow/tensor2tensor/blob/master/tensor2tensor/models/transformer.py).
-
-
-<p align="center">
-<img src="https://miro.medium.com/max/1400/1*BHzGVskWGS_3jEcYYi6miQ.png" width="700">
-</p>
-
->>>>>>> e82163c0d7275861b35a89611b0dea9e509c2821
 
 The project support training and translation with trained model now.
 
@@ -63,15 +68,6 @@ The directory structure of this project is shown below:
 
 ## Positional Encoding
 The positional encodings have the same dimension d_model as the embeddings, so that the two can be summed.
-<!-- $$PE_{(pos, 2i)}=sin(\frac{pos}{10000^{2i/d_{model}}})$$
-
-$$PE_{(pos, 2i+1)}=cos(\frac{pos}{10000^{2i/d_{model}}})$$ -->
-
-<p align="center">
-<img src="https://latex.codecogs.com/png.image?\large&space;\dpi{110}\bg{white}\begin{}\\PE_{(pos,&space;2i)}=sin(\frac{pos}{10000^{2i/d_{model}}})&space;\\PE_{(pos,&space;2i&plus;1)}=cos(\frac{pos}{10000^{2i/d_{model}}})\end{}" title="https://latex.codecogs.com/png.image?\large \dpi{110}\bg{white}\begin{}\\PE_{(pos, 2i)}=sin(\frac{pos}{10000^{2i/d_{model}}}) \\PE_{(pos, 2i+1)}=cos(\frac{pos}{10000^{2i/d_{model}}})\end{}" />
-</p>
-
-
 ```python
 class PositionalEncoder(nn.Module):
     def __init__(self, d_model, max_seq_len=512):
@@ -96,13 +92,7 @@ class PositionalEncoder(nn.Module):
 
 ## Multi-Head Attention
 
-<!-- $$MultiHead(Q, K, V ) = Concat(head_1,..., head_h)W_O$$
 
-$$head_i = Attention(QWQ_i^Q, KW^K_i,VW^V_i)$$ -->
-
-<p align="center">
-<img src="https://latex.codecogs.com/png.image?\large&space;\dpi{110}\bg{white}\begin{}\\MultiHead(Q,&space;K,&space;V&space;)&space;=&space;Concat(head_1,...,&space;head_h)W_O&space;\\head_i&space;=&space;Attention(QWQ_i^Q,&space;KW^K_i,VW^V_i)\end{}" title="https://latex.codecogs.com/png.image?\large \dpi{110}\bg{white}\begin{}\\MultiHead(Q, K, V ) = Concat(head_1,..., head_h)W_O \\head_i = Attention(QWQ_i^Q, KW^K_i,VW^V_i)\end{}" />
-</p>
 
 ```python
 # Multi-head attention layer
@@ -226,7 +216,7 @@ class TransformerTranslator(nn.Module):
 ```
 
 ---
-# Training
+# Usage
 ## Download the dataset
 ```bash
 https://huggingface.co/datasets/Helsinki-NLP/opus_books/viewer/en-hu
@@ -235,21 +225,13 @@ https://huggingface.co/datasets/Helsinki-NLP/opus_books/viewer/en-hu
 ```bash
 python train.py
 ```
-- Training:
-    - Validation loss: 2.1220
 
-Model training until epoch 15 and stop training because of early stopping. Best validation loss is 2.1220. 
-<figure>
-<p align="center">
-<img src="./logs/loss_epoch.png" width="700">
-<figcaption>Training loss and validation loss for each epoch.</figcaption>
-</p>
-</figure>
-
----
 
 # Evaluation
-See the file `evaluate.py`.
+```bash
+python evaluation.py
+```
+# Ineferences
+See the file translate.py. If you don't have the resources to train the model, you can download my pre-trained model to use.
 
-
-# References
+To download the pre-trained model file "transformer_model.pth", you can click [here](https://example.com/transformer_model.pth). Make sure to save the file in the appropriate directory for your project.

@@ -110,7 +110,7 @@ class Encoder(nn.Module):
         return x
 
 class TransformerTranslator(nn.Module):
-    def __init__(self, num_layers, d_model, num_heads, hidden_dim, input_vocab_size, target_vocab_size, max_seq_len, dropout=0.1, learning_rate=1e-2, batch_size=128):
+    def __init__(self, num_layers, d_model, num_heads, hidden_dim, input_vocab_size, target_vocab_size, max_seq_len, dropout=0.1, learning_rate=1e-3, batch_size=128):
         super(TransformerTranslator, self).__init__()
         self.embedding = nn.Embedding(input_vocab_size, d_model)
         self.positional_encoder = PositionalEncoder(d_model, max_seq_len)

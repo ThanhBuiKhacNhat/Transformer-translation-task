@@ -1,10 +1,10 @@
 import torch
-import torch.nn as nn
-from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-def train(model, train_loader, val_loader, criterion, optimizer, num_epochs,
-    device):
+def train(model, train_loader, val_loader, criterion, optimizer, num_epochs, device):
+    """
+    Train the model with the given data loaders, criterion, optimizer, and number of epochs.
+    """
     train_losses = []
     val_losses = []
     val_accuracies = []
@@ -50,4 +50,3 @@ def train(model, train_loader, val_loader, criterion, optimizer, num_epochs,
         print(f"Epoch {epoch+1}/{num_epochs}, Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}, Val Accuracy: {accuracy:.4f}")
 
     return train_losses, val_losses, val_accuracies
-
