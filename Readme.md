@@ -8,6 +8,12 @@
   - [Encoder](#encoder)
     - [Encoder Layer](#encoder-layer)
     - [Encoder](#encoder-1)
+<<<<<<< HEAD
+=======
+  - [Decoder](#decoder)
+    - [Decoder Layer](#decoder-layer)
+    - [Decoder](#decoder-1)
+>>>>>>> e82163c0d7275861b35a89611b0dea9e509c2821
   - [Transformer](#transformer)
 - [Training](#training)
   - [Download the dataset](#download-the-dataset)
@@ -18,10 +24,24 @@
 
 # Transformer - Attention is all you need - Pytorch Implementation
 
+<<<<<<< HEAD
 <p align="center">
 <img src="https://miro.medium.com/max/1400/1*BHzGVskWGS_3jEcYYi6miQ.png" width="700">
 </p>
 
+=======
+This is a PyTorch implementation of the Transformer model in the paper [Attention is All You Need](https://arxiv.org/abs/1706.03762) (Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin, arxiv, 2017).
+
+In this implementation, I will train the model on the machine translation task from English to Vietnamese, with the data used [here](https://drive.google.com/file/d/1Fuo_ALIFKlUvOPbK5rUA5OfAS2wKn_95/view) ([This is](https://github.com/pbcquoc/transformer) the original reference repository)
+
+> The official Tensorflow Implementation can be found in: [tensorflow/tensor2tensor](https://github.com/tensorflow/tensor2tensor/blob/master/tensor2tensor/models/transformer.py).
+
+
+<p align="center">
+<img src="https://miro.medium.com/max/1400/1*BHzGVskWGS_3jEcYYi6miQ.png" width="700">
+</p>
+
+>>>>>>> e82163c0d7275861b35a89611b0dea9e509c2821
 
 The project support training and translation with trained model now.
 
