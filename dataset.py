@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
-from transformers import BertTokenizer
+
 
 class TranslationDataset(Dataset):
     """Custom Dataset for translation tasks using BERT tokenizer."""

@@ -4,12 +4,12 @@ This project utilizes a Transformer model for English to Hungarian translation. 
 
 ## Requirements
 
-- Python 3.6 or later
-- PyTorch 1.8.1 or later
-- Transformers 4.6.1 or later
-- pandas
-- numpy
-- scikit-learn
+- Python 3.11 or later
+- PyTorch 2.0.1
+- Transformers 4.30.0 or later
+- pandas 1.5.3 or later
+- numpy 1.23.5 or later
+- scikit-learn 1.2.2 or later
 
 ## Installation
 
@@ -18,6 +18,8 @@ Clone the repository and install the required packages:
 ```bash
 git clone https://github.com/ThanhBuiKhacNhat/Transformer-translation-task.git
 cd Transformer-translation-task
+pip install -q git+https://github.com/huggingface/transformers.git
+pip install datasets
 pip install -r requirements.txt
 ```
 
@@ -219,12 +221,26 @@ class TransformerTranslator(nn.Module):
 # Usage
 ## Download the dataset
 ```bash
-https://huggingface.co/datasets/Helsinki-NLP/opus_books/viewer/en-hu
+pip install -q git+https://github.com/huggingface/transformers.git
+pip install datasets
 ```
 ## Train the model
 ```bash
 python train.py
 ```
+Parameter settings:
+- batch size : 128
+- n_epochs : 20
+- learning_rate : 1e-3
+- num_heads : 8
+- hidden_dim : 512
+- d_model : 256
+- num_layers : 6
+- max_seq_len : 128
+- dropout : 0.1
+
+<p align="center">
+<img src="plot.png" width="700">
 
 
 # Evaluation
@@ -232,6 +248,4 @@ python train.py
 python evaluation.py
 ```
 # Ineferences
-See the file translate.py. If you don't have the resources to train the model, you can download my pre-trained model to use.
-
-To download the pre-trained model file "transformer_model.pth", you can click [here](https://example.com/transformer_model.pth). Make sure to save the file in the appropriate directory for your project.
+See the file translate.py. If you don't have the resources to train the model, you can download my pre-trained model to use. (transformer_model.pth)

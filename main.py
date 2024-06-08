@@ -54,7 +54,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 
 # Train the model
 train_losses, val_losses, val_accuracies = train(
-    model, train_loader, val_loader, criterion, optimizer, num_epochs=10, device=device
+    model, train_loader, val_loader, criterion, optimizer, num_epochs=20, device=device
 )
 
 # Evaluate the model
@@ -63,10 +63,16 @@ test_loss, test_accuracy = evaluate(model, test_loader, criterion, device)
 # Save the trained model parameters
 torch.save(model.state_dict(), "transformer_model.pth")
 
-# Save metrics to CSV
-metrics = {
-    'test_loss': test_loss, 
-    'test_accuracy': test_accuracy
-}
-metrics_df = pd.DataFrame(metrics, index=[0])
+# Initialize an empty DataFrame
+metrics_df = pd.DataFrame(columns=['test_loss', 'test_accuracy'])
+
+# Assume you have a loop over epochs
+for epoch in range(20):
+    # Append metrics to DataFrame
+    metrics_df = metrics_df.append({
+        'test_loss': test_loss, 
+        'test_accuracy': test_accuracy
+    }, ignore_index=True)
+
+# Save DataFrame to CSV
 metrics_df.to_csv('metrics.csv', index=False)
