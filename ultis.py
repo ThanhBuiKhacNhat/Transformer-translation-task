@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Read the CSV file
-data = pd.read_csv('Results\metrics.csv')
+data = pd.read_csv('metrics.csv')
 
 # Extract the data for the two columns
 column1 = data['test_loss']
