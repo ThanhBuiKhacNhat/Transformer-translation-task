@@ -1,6 +1,7 @@
 # English to Hungarian Translation using Transformer
 
 This project utilizes a Transformer model for English to Hungarian translation. The model is trained on the "opus_books" dataset from the Hugging Face's dataset hub.
+## Structure 
 
 ## Requirements
 
@@ -22,7 +23,28 @@ pip install -q git+https://github.com/huggingface/transformers.git
 pip install datasets
 pip install -r requirements.txt
 ```
+After downloading. The directory structure must look like this:
 
+The directory structure of this project is shown below:
+```
+├── assets/
+│   ├── metrics.csv 
+│   └── plot.png
+├── data
+├── datasets/
+│   ├── load_dataset.py (# origin: dataFrame.py)
+│   └── dataset.py
+├── model/
+│   ├── transformer.py (# origin: model.py)
+│   ├── evaluation.py 
+│   ├── trainer.py
+│   └── inference.py
+├── utils/
+│   └── visualizer.py
+├── main.py
+├── requirements.txt
+└── .gitignore
+```
 
 
 # Table of Contents
@@ -35,13 +57,16 @@ pip install -r requirements.txt
   - [Encoder](#encoder)
     - [Encoder Layer](#encoder-layer)
     - [Encoder](#encoder-1)
+  - [Decoder](#Decoder)
+    - [Decoder Layer](#decoder-layer)
+    - [Decoder](#encoder-1)
   - [Transformer](#transformer)
 - [Training](#training)
   - [Download the dataset](#download-the-dataset)
   - [Train the model](#train-the-model)
 - [Evaluation](#evaluation)
 - [Inference](#inference)
-- [References](#references)
+
 
 # Transformer - Attention is all you need - Pytorch Implementation
 
@@ -54,16 +79,7 @@ The project support training and translation with trained model now.
 
 If there is any suggestion or error, feel free to fire an issue to let me know. :)
 
-The directory structure of this project is shown below:
-```bash
-- `dataset.py`: Contains the `TranslationDataset` class and `load_datasets` function for preparing the data.
-- `models.py`: Contains the `TransformerTranslator` model definition.
-- `train.py`: Contains the training loop logic.
-- `evaluate.py`: Contains the evaluation logic.
-- `translate.py`: Contains a function to translate sentences using the trained model.
-- `main.py`: The main script to tie everything together and run the training and evaluation.
-- `README.md`: Project description and instructions.
-```
+
 
 ---
 # Models
@@ -166,9 +182,6 @@ class EncoderLayer(nn.Module):
         return out2
 ```
 
-<!-- <p align="center">
-<img src="https://www.factored.ai/wp-content/uploads/2021/09/image2-580x1024.png" width="350">
-</p> -->
 
 <figure>
 <p align="center">
@@ -193,8 +206,64 @@ class Encoder(nn.Module):
             x = layer(x, mask)
         return x
 ```
+## Decoder
+### Decoder Layer
+```python
+# Transformer decoder layer
+class DecoderLayer(nn.Module):
+    def __init__(self, d_model, num_heads, hidden_dim, dropout=0.1):
+        super(DecoderLayer, self).__init__()
+        self.self_attention = MultiHeadAttention(d_model, num_heads)
+        self.dropout1 = nn.Dropout(dropout)
+        self.norm1 = NormLayer(d_model)
+        
+        self.enc_dec_attention = MultiHeadAttention(d_model, num_heads)
+        self.dropout2 = nn.Dropout(dropout)
+        self.norm2 = NormLayer(d_model)
+        
+        self.ffn = nn.Sequential(
+            nn.Linear(d_model, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, d_model)
+        )
+        self.dropout3 = nn.Dropout(dropout)
+        self.norm3 = NormLayer(d_model)
+    
+    def forward(self, x, enc_output, self_mask, enc_dec_mask):
+        self_attention_output = self.self_attention(x, x, x, self_mask)
+        self_attention_output = self.dropout1(self_attention_output)
+        self_out = self.norm1(x + self_attention_output)
+        
+        enc_dec_attention_output = self.enc_dec_attention(self_out, enc_output, enc_output, enc_dec_mask)
+        enc_dec_attention_output = self.dropout2(enc_dec_attention_output)
+        enc_dec_out = self.norm2(self_out + enc_dec_attention_output)
+        
+        ffn_output = self.ffn(enc_dec_out)
+        ffn_output = self.dropout3(ffn_output)
+        out = self.norm3(enc_dec_out + ffn_output)
+        
+        return out
+```
+<figure>
+<p align="center">
+<img src="assets\decode.png" width="350">
+</p>
 
+### Decoder
+```python
+# Encoder transformer
+class Decoder(nn.Module):
+    def __init__(self, num_layers, d_model, num_heads, hidden_dim, dropout=0.1):
+        super(Decoder, self).__init__()
+        self.num_layers = num_layers
+        self.layers = nn.ModuleList([DecoderLayer(d_model, num_heads, hidden_dim, dropout) for _ in range(num_layers)])
+    
+    def forward(self, x, enc_output, self_mask, enc_dec_mask):
+        for layer in self.layers:
+            x =layer(x, enc_output, self_mask, enc_dec_mask)
+        return x
 
+```
 
 ## Transformer
 ```python
@@ -231,7 +300,7 @@ python train.py
 Parameter settings:
 - batch size : 128
 - n_epochs : 20
-- learning_rate : 1e-3
+- learning_rate : 1e-5
 - num_heads : 8
 - hidden_dim : 512
 - d_model : 256
@@ -240,12 +309,13 @@ Parameter settings:
 - dropout : 0.1
 
 <p align="center">
-<img src="plot.png" width="700">
+<img src="assets\plot.png" width="700">
 
+All results of each epochs have been saved in file [metric.csv](assets\metrics.csv)
 
 # Evaluation
 ```bash
 python evaluation.py
 ```
 # Ineferences
-See the file translate.py. If you don't have the resources to train the model, you can download my pre-trained model to use. (transformer_model.pth)
+See the file [inference.py](model\inference.py). If you don't have the resources to train the model, you can download my pre-trained model to use [transformer_model.pth](https://drive.google.com/drive/folders/1aNKr9Q7q1_M2oNABcCiq2J_HQBs7jl8d?usp=sharing)

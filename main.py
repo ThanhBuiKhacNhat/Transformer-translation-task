@@ -38,10 +38,10 @@ test_loader = DataLoader(test_dataset, batch_size=32)
 # Initialize the model
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = TransformerTranslator(
-    num_layers=6, 
+    num_layers=3, 
     d_model=256, 
-    num_heads=8, 
-    hidden_dim=512, 
+    num_heads=4, 
+    hidden_dim=256, 
     input_vocab_size=tokenizer.vocab_size, 
     target_vocab_size=tokenizer.vocab_size,
     max_seq_len=128, 
@@ -50,7 +50,7 @@ model = TransformerTranslator(
 
 # Define loss function and optimizer
 criterion = nn.CrossEntropyLoss(ignore_index=-100)
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)
 
 # Train the model
 train_losses, val_losses, val_accuracies = train(
