@@ -2,9 +2,6 @@ import torch
 from tqdm import tqdm
 
 def train(model, train_loader, val_loader, criterion, optimizer, num_epochs, device):
-    """
-    Train the model with the given data loaders, criterion, optimizer, and number of epochs.
-    """
     train_losses = []
     val_losses = []
     val_accuracies = []
@@ -13,10 +10,14 @@ def train(model, train_loader, val_loader, criterion, optimizer, num_epochs, dev
         model.train()
         train_loss = 0.0
         for batch in tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}"):
-            input_ids, attention_mask, labels = batch['input_ids'].to(device), batch['attention_mask'].to(device), batch['labels'].to(device)
+            input_ids = batch['input_ids'].to(device)
+            target_ids = batch['target_ids'].to(device)
+            input_mask = batch['input_mask'].to(device)
+            target_mask = batch['target_mask'].to(device)
+            labels = batch['labels'].to(device)
 
             optimizer.zero_grad()
-            outputs = model(input_ids, attention_mask)
+            outputs = model(input_ids, target_ids, input_mask, target_mask)
             loss = criterion(outputs.view(-1, outputs.size(-1)), labels.view(-1))
             loss.backward()
             optimizer.step()
@@ -32,9 +33,13 @@ def train(model, train_loader, val_loader, criterion, optimizer, num_epochs, dev
         total = 0
         with torch.no_grad():
             for batch in val_loader:
-                input_ids, attention_mask, labels = batch['input_ids'].to(device), batch['attention_mask'].to(device), batch['labels'].to(device)
+                input_ids = batch['input_ids'].to(device)
+                target_ids = batch['target_ids'].to(device)
+                input_mask = batch['input_mask'].to(device)
+                target_mask = batch['target_mask'].to(device)
+                labels = batch['labels'].to(device)
 
-                outputs = model(input_ids, attention_mask)
+                outputs = model(input_ids, target_ids, input_mask, target_mask)
                 loss = criterion(outputs.view(-1, outputs.size(-1)), labels.view(-1))
                 val_loss += loss.item() * input_ids.size(0)
 

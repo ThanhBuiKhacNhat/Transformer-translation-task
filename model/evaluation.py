@@ -19,24 +19,23 @@ def evaluate(model, test_loader, criterion, device):
     correct = 0
     total = 0
 
-    with torch.no_grad():  # Disable gradient computation
+    with torch.no_grad():
         for batch in test_loader:
-            # Move input and label tensors to the specified device
-            input_ids, attention_mask, labels = batch['input_ids'].to(device), batch['attention_mask'].to(device), batch['labels'].to(device)
+            input_ids = batch['input_ids'].to(device)
+            target_ids = batch['target_ids'].to(device)
+            input_mask = batch['input_mask'].to(device)
+            target_mask = batch['target_mask'].to(device)
+            labels = batch['labels'].to(device)
 
-            # Forward pass
-            outputs = model(input_ids, attention_mask)
+            outputs = model(input_ids, target_ids, input_mask, target_mask)
             loss = criterion(outputs.view(-1, outputs.size(-1)), labels.view(-1))
-            test_loss += loss.item() * input_ids.size(0)  # Accumulate test loss
+            test_loss += loss.item() * input_ids.size(0)
 
-            # Compute predictions
             _, predicted = torch.max(outputs, 2)
-            correct += (predicted == labels).sum().item()  # Accumulate number of correct predictions
-            total += labels.size(0) * labels.size(1)  # Accumulate total number of labels
+            correct += (predicted == labels).sum().item()
+            total += labels.size(0) * labels.size(1)
 
-    # Compute average test loss
     test_loss /= len(test_loader.dataset)
-    # Compute accuracy
     accuracy = correct / total
 
     # Print test loss and accuracy

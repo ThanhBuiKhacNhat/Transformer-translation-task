@@ -16,7 +16,7 @@ warnings.filterwarnings("ignore", message="overflowing tokens are not returned")
 logging.set_verbosity_error()
 
 # Load data
-data = pd.read_csv("data\opus_books_en_hu.csv")
+data = pd.read_csv("data/opus_books_en_hu.csv")
 
 # Split data into training, validation, and test sets
 train_data, test_data = train_test_split(data, test_size=0.1, random_state=42)
@@ -49,7 +49,7 @@ model = TransformerTranslator(
 ).to(device)
 
 # Define loss function and optimizer
-criterion = nn.CrossEntropyLoss()
+criterion = nn.CrossEntropyLoss(ignore_index=-100)
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 
 # Train the model
@@ -64,14 +64,15 @@ test_loss, test_accuracy = evaluate(model, test_loader, criterion, device)
 torch.save(model.state_dict(), "transformer_model.pth")
 
 # Initialize an empty DataFrame
-metrics_df = pd.DataFrame(columns=['test_loss', 'test_accuracy'])
+metrics_df = pd.DataFrame(columns=['epoch', 'train_loss', 'val_loss', 'val_accuracy'])
 
-# Assume you have a loop over epochs
-for epoch in range(20):
-    # Append metrics to DataFrame
+# Save metrics to DataFrame
+for epoch, (train_loss, val_loss, val_accuracy) in enumerate(zip(train_losses, val_losses, val_accuracies), 1):
     metrics_df = metrics_df.append({
-        'test_loss': test_loss, 
-        'test_accuracy': test_accuracy
+        'epoch': epoch, 
+        'train_loss': train_loss, 
+        'val_loss': val_loss, 
+        'val_accuracy': val_accuracy
     }, ignore_index=True)
 
 # Save DataFrame to CSV
