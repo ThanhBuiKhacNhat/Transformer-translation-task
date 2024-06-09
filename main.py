@@ -4,10 +4,10 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from sklearn.model_selection import train_test_split
 from transformers import BertTokenizer
-from dataset import TranslationDataset
-from models import TransformerTranslator
-from train import train
-from evaluate import evaluate
+from datasets.dataset import TranslationDataset
+from model.transformer import TransformerTranslator
+from model.trainer import train
+from model.evaluation import evaluate
 import warnings
 from transformers import logging
 
@@ -16,7 +16,7 @@ warnings.filterwarnings("ignore", message="overflowing tokens are not returned")
 logging.set_verbosity_error()
 
 # Load data
-data = pd.read_csv("opus_books_en_hu.csv")
+data = pd.read_csv("data\opus_books_en_hu.csv")
 
 # Split data into training, validation, and test sets
 train_data, test_data = train_test_split(data, test_size=0.1, random_state=42)

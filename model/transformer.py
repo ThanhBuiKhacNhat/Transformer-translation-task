@@ -109,20 +109,73 @@ class Encoder(nn.Module):
             x = layer(x, mask)
         return x
 
+class DecoderLayer(nn.Module):
+    def __init__(self, d_model, num_heads, hidden_dim, dropout=0.1):
+        super(DecoderLayer, self).__init__()
+        self.self_attention = MultiHeadAttention(d_model, num_heads)
+        self.dropout1 = nn.Dropout(dropout)
+        self.norm1 = NormLayer(d_model)
+        
+        self.enc_dec_attention = MultiHeadAttention(d_model, num_heads)
+        self.dropout2 = nn.Dropout(dropout)
+        self.norm2 = NormLayer(d_model)
+        
+        self.ffn = nn.Sequential(
+            nn.Linear(d_model, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, d_model)
+        )
+        self.dropout3 = nn.Dropout(dropout)
+        self.norm3 = NormLayer(d_model)
+    
+    def forward(self, x, enc_output, self_mask, enc_dec_mask):
+        self_attention_output = self.self_attention(x, x, x, self_mask)
+        self_attention_output = self.dropout1(self_attention_output)
+        self_out = self.norm1(x + self_attention_output)
+        
+        enc_dec_attention_output = self.enc_dec_attention(self_out, enc_output, enc_output, enc_dec_mask)
+        enc_dec_attention_output = self.dropout2(enc_dec_attention_output)
+        enc_dec_out = self.norm2(self_out + enc_dec_attention_output)
+        
+        ffn_output = self.ffn(enc_dec_out)
+        ffn_output = self.dropout3(ffn_output)
+        out = self.norm3(enc_dec_out + ffn_output)
+        
+        return out
+
+class Decoder(nn.Module):
+    def __init__(self, num_layers, d_model, num_heads, hidden_dim, dropout=0.1):
+        super(Decoder, self).__init__()
+        self.num_layers = num_layers
+        self.layers = nn.ModuleList([DecoderLayer(d_model, num_heads, hidden_dim, dropout) for _ in range(num_layers)])
+    
+    def forward(self, x, enc_output, self_mask, enc_dec_mask):
+        for layer in self.layers:
+            x =layer(x, enc_output, self_mask, enc_dec_mask)
+        return x
+
 class TransformerTranslator(nn.Module):
     def __init__(self, num_layers, d_model, num_heads, hidden_dim, input_vocab_size, target_vocab_size, max_seq_len, dropout=0.1, learning_rate=1e-3, batch_size=128):
         super(TransformerTranslator, self).__init__()
-        self.embedding = nn.Embedding(input_vocab_size, d_model)
+        self.embedding_input = nn.Embedding(input_vocab_size, d_model)
+        self.embedding_target = nn.Embedding(target_vocab_size, d_model)
         self.positional_encoder = PositionalEncoder(d_model, max_seq_len)
         self.encoder = Encoder(num_layers, d_model, num_heads, hidden_dim, dropout)
+        self.decoder = Decoder(num_layers, d_model, num_heads, hidden_dim, dropout)
         self.fc = nn.Linear(d_model, target_vocab_size)
         self.learning_rate = learning_rate
         self.batch_size = batch_size
     
-    def forward(self, input_ids, mask):
-        x = self.embedding(input_ids)
-        x = self.positional_encoder(x)
-        x = self.encoder(x, mask)
-        x = self.fc(x)
-        return x
+    def forward(self, input_ids, target_ids, input_mask, target_mask):
+        enc_input = self.embedding_input(input_ids)
+        enc_input = self.positional_encoder(enc_input)
+        enc_output = self.encoder(enc_input, input_mask)
+        
+        dec_input = self.embedding_target(target_ids)
+        dec_input = self.positional_encoder(dec_input)
+        dec_output = self.decoder(dec_input, enc_output, target_mask, input_mask)
+        
+        output = self.fc(dec_output)
+        return output
+
 
